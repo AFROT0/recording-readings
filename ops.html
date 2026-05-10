@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطة التشغيل — تسجيل القراءات</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="operatingPlan" class="section active">
+            <div class="header-controls">
+                <button type="button" class="back-btn">← رجوع</button>
+                <h2 class="section-title">خطة التشغيل</h2>
+                <div id="syncIndicator" class="sync-indicator sync-offline">
+                    <span class="sync-dot"></span>
+                    <span class="sync-text">جاري الاتصال...</span>
+                </div>
+                <button type="button" id="themeToggle" class="theme-toggle-btn" onclick="toggleTheme()"
+                    aria-label="تبديل الوضع الليلي"><i class="fas fa-moon"></i></button>
+            </div>
+
+            <div class="op-page">
+                <div class="month-row">
+                    <span>شهر</span>
+                    <select id="opMonthSel" onchange="handleOpMonthChange()">
+                        <option value="يناير">يناير</option>
+                        <option value="فبراير">فبراير</option>
+                        <option value="مارس">مارس</option>
+                        <option value="أبريل">أبريل</option>
+                        <option value="مايو" selected>مايو</option>
+                        <option value="يونيو">يونيو</option>
+                        <option value="يوليو">يوليو</option>
+                        <option value="أغسطس">أغسطس</option>
+                        <option value="سبتمبر">سبتمبر</option>
+                        <option value="أكتوبر">أكتوبر</option>
+                        <option value="نوفمبر">نوفمبر</option>
+                        <option value="ديسمبر">ديسمبر</option>
+                    </select>
+                    <input type="number" id="opYearInput" value="2026" min="2020" max="2050"
+                        onchange="handleOpYearChange()">
+                </div>
+
+                <div class="op-toolbar">
+                    <button class="btn btn-clear" onclick="clearOpPlan()">مسح الكل</button>
+                    <button class="btn btn-save" onclick="checkAllOpPlan()">تحديد الكل</button>
+                </div>
+
+                <div class="op-subpage-nav">
+                    <a class="btn btn-save op-subpage-link" href="Operation of units.html">خطة تشغيل المرشحة ←</a>
+                </div>
+
+                <div class="op-legend">
+                    <div class="legend-item">
+                        <div class="legend-box"><input type="checkbox" checked disabled></div>
+                        <span>وحدة مشغّلة</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box"><input type="checkbox" disabled></div>
+                        <span>وحدة متوقفة</span>
+                    </div>
+                </div>
+
+                <div class="table-wrapper op-table-wrapper">
+                    <table id="opScheduleTable">
+                        <colgroup>
+                            <col class="col-cat">
+                            <col class="col-num">
+                            <col class="col-week">
+                            <col class="col-week">
+                            <col class="col-week">
+                            <col class="col-week">
+                            <col class="col-notes">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="col-cat">الوحدة</th>
+                                <th rowspan="2" class="col-num">المعدة</th>
+                                <th colspan="4">الأسبوع</th>
+                                <th rowspan="2" class="col-notes">الملاحظات</th>
+                            </tr>
+                            <tr>
+                                <th class="sub col-week">١</th>
+                                <th class="sub col-week">٢</th>
+                                <th class="sub col-week">٣</th>
+                                <th class="sub col-week">٤</th>
+                            </tr>
+                        </thead>
+                        <tbody id="opTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="successToast" class="success-toast">✓ تم الحفظ بنجاح</div>
+
+    <script src="cordova.js"></script>
+    <script>
+        // Handle missing cordova.js gracefully in web version
+        if (typeof cordova === 'undefined') {
+            window.cordova = {
+                platformId: 'browser',
+                ready: function(callback) { callback(); }
+            };
+        }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-messaging.js"></script>
+    <script>
+        window.APP_ROLE = 'ops_manager';
+        window.APP_BOOT_MODE = 'ops';
+    </script>
+    <script src="js/app.js"></script>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggleBtn = document.getElementById('themeToggle');
+            if (!themeToggleBtn) return;
+            const icon = themeToggleBtn.querySelector('i');
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeToggleBtn = document.getElementById('themeToggle');
+            if (themeToggleBtn && savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+                const icon = themeToggleBtn.querySelector('i');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        });
+    </script>
+</body>
+
+</html>

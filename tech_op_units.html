@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خطة تشغيل المرشحة (عرض فقط)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d1117; --surface:#161b22; --card:#1c2333; --border:#30363d;
+  --accent:#1d9e75; --accent-light:#2dcc99; --accent-dim:rgba(29,158,117,0.15);
+  --text:#e6edf3; --muted:#7d8590; --danger:#e24b4a; --info:#378add;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
+
+/* ── Header ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
+.hbrand{display:flex;align-items:center;gap:12px;}
+.hicon{width:36px;height:36px;background:var(--accent-dim);border:1px solid var(--accent);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.hicon svg{width:18px;height:18px;stroke:var(--accent-light);}
+.header h1{font-size:18px;font-weight:700;}
+.hdate{font-size:13px;color:var(--muted);}
+.btn-print{background:transparent;border:1px solid var(--border);color:var(--muted);
+  padding:7px 16px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:13px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-print:hover{border-color:var(--accent);color:var(--accent-light);}
+
+/* ── Layout ── */
+.main{max-width:900px;margin:0 auto;padding:2rem;}
+.sec{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin-bottom:12px;}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:2rem;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.stat-val{font-size:28px;font-weight:700;}
+.c-green{color:var(--accent-light);}
+.c-blue{color:#85b7eb;}
+
+/* ── Timeline ── */
+.tl-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:2rem;}
+.tl-hrs{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;padding:0 2px;}
+.tl-bar{height:40px;background:var(--surface);border-radius:6px 6px 0 0;
+  position:relative;overflow:hidden;border:1px solid var(--border);border-bottom:none;}
+.tl-seg{position:absolute;height:100%;border-radius:3px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;overflow:hidden;}
+.tl-zones{display:flex;height:8px;border-radius:0 0 6px 6px;overflow:hidden;border:1px solid var(--border);border-top:none;}
+.zone{height:100%;}
+.z-morning{background:rgba(55,138,221,.45);}
+.z-evening{background:rgba(127,119,221,.45);}
+.z-night{background:rgba(29,158,117,.3);}
+.tl-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12px;color:var(--muted);}
+.ldot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-left:5px;}
+
+/* ── Table ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface);}
+th{padding:11px 14px;font-size:12px;font-weight:600;color:var(--muted);text-align:right;border-bottom:1px solid var(--border);}
+td{padding:12px 14px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:700;}
+.bm{background:rgba(55,138,221,.18);color:#85b7eb;}
+.be{background:rgba(127,119,221,.18);color:#afa9ec;}
+.bn{background:rgba(29,158,117,.15);color:#5dcaa5;}
+.upill{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  background:var(--accent-dim);border:1px solid var(--accent);border-radius:8px;
+  font-weight:700;font-size:15px;color:var(--accent-light);}
+.dur{color:var(--muted);font-size:13px;}
+.empty{text-align:center;padding:3rem;color:var(--muted);}
+.empty .icon{font-size:30px;margin-bottom:8px;opacity:.4;}
+
+/* segment colors */
+.c1{background:rgba(29,158,117,.8);}
+.c2{background:rgba(55,138,221,.8);}
+.c3{background:rgba(127,119,221,.8);}
+.c4{background:rgba(239,159,39,.8);}
+.c5{background:rgba(226,75,74,.8);}
+.c6{background:rgba(93,202,165,.8);}
+
+/* ── Footer ── */
+.footer{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.5rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.footer-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:18px 20px;text-align:center;}
+.footer-role{font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:8px;}
+.footer-name{font-size:17px;font-weight:700;color:var(--text);}
+.footer-sig{margin-top:16px;border-top:1px dashed var(--border);padding-top:10px;
+  font-size:11px;color:var(--muted);}
+
+@media print{
+  body{background:#fff;color:#000;}
+  .header{position:static;background:#fff;border-bottom:1px solid #ccc;}
+  .btn-print,.btn-add,.btn-del,.form-card,.warn-box,.success-toast,.stats,.tl-wrap,.sync-indicator{display:none!important;}
+  .main{padding:1rem;}
+  .tbl-wrap,.footer-card{border:1px solid #ccc;background:#fff;}
+  .stat-val,th,td,.footer-name{color:#000;}
+  .sec,.dur,.footer-role,.footer-sig{color:#666;}
+  .bm{background:#dbeafe;color:#1d4ed8;}
+  .be{background:#ede9fe;color:#5b21b6;}
+  .bn{background:#d1fae5;color:#065f46;}
+  .upill{background:#d1fae5;color:#065f46;border-color:#065f46;}
+  .footer{border-top:1px solid #ccc;}
+  .footer-sig{border-top:1px dashed #ccc;}
+}
+
+/* ── Responsive Adjustments ── */
+@media (max-width: 768px) {
+  .header { padding: 0 1rem; height: auto; padding-top: 10px; padding-bottom: 10px; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .header h1 { font-size: 16px; }
+  .hbrand { width: 100%; justify-content: space-between; }
+  .main { padding: 0.5rem; }
+  .stats { grid-template-columns: 1fr; gap: 8px; margin-bottom: 1rem; }
+  .stat { padding: 10px 15px; }
+  .footer { grid-template-columns: 1fr; gap: 8px; margin-top: 1.5rem; }
+  .tbl-wrap { overflow-x: auto; border-radius: 8px; }
+  table { min-width: 500px; font-size: 11px; }
+  th { padding: 8px 6px; font-size: 11px; }
+  td { padding: 8px 6px; font-size: 12px; }
+  .tl-hrs span:nth-child(even) { display: none; } /* Show fewer labels on mobile */
+}
+
+@media (max-width: 480px) {
+  .header .hbrand { flex-wrap: wrap; gap: 8px; }
+  .header .hbrand button { order: 1; font-size: 11px; padding: 5px 10px; }
+  .header .hbrand .hicon { order: 2; width: 28px; height: 28px; }
+  .header .hbrand div:last-child { order: 3; width: 100%; }
+  .header h1 { font-size: 14px; }
+  .stat-val { font-size: 18px; }
+  .tl-hrs { font-size: 9px; }
+  .tl-wrap { padding: 10px; margin-bottom: 1rem; }
+  table { min-width: 100%; } /* السماح للجدول بالتكيف مع الشاشة */
+  th, td { padding: 6px 4px; font-size: 10px; word-break: break-word; }
+  .badge { padding: 2px 6px; font-size: 9px; }
+  .upill { width: 24px; height: 24px; font-size: 12px; }
+}
+
+/* ── Sync Indicator ── */
+.sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ccc;
+}
+.sync-online .sync-dot { background: #2dcc99; box-shadow: 0 0 6px #2dcc99; }
+.sync-offline .sync-dot { background: #e24b4a; box-shadow: 0 0 6px #e24b4a; }
+.sync-text { color: var(--text); opacity: 0.7; font-size: 11px; }
+
+/* ── Toast ── */
+.success-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--accent);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+.success-toast.show { display: block; }
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hbrand">
+    <button class="btn-print" onclick="window.location.href='tech.html'" style="margin-left: 15px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      رجوع
+    </button>
+    <div class="hicon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <div>
+      <h1>خطة تشغيل المرشحة (عرض)</h1>
+      <div id="syncIndicator" class="sync-indicator sync-offline" style="margin-top: 4px;">
+        <span class="sync-dot"></span>
+        <span class="sync-text" style="font-size: 11px;">جاري الاتصال...</span>
+      </div>
+      <div class="hdate" id="todayDate"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="main">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-lbl">إجمالي الفترات</div>
+      <div class="stat-val c-green" id="statSlots">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-lbl">إجمالي ساعات التشغيل</div>
+      <div class="stat-val c-blue" id="statHours">0</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="tl-wrap">
+    <div class="sec">الجدول الزمني — 24 ساعة</div>
+    <div class="tl-hrs" id="tlHrs"></div>
+    <div class="tl-bar" id="tlBar"></div>
+    <div class="tl-zones">
+      <div class="zone z-night"   style="width:16.67%"></div>
+      <div class="zone z-evening" style="width:25%"></div>
+      <div class="zone z-morning" style="width:25%"></div>
+      <div class="zone z-night"   style="width:33.33%"></div>
+    </div>
+    <div style="display:flex;gap:18px;margin-top:10px;font-size:11px;color:var(--muted);flex-wrap:wrap">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(55,138,221,.55);margin-left:4px"></span>صباحية (8ص – 2م)</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(127,119,221,.55);margin-left:4px"></span>مسائية (2م – 8م)</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(29,158,117,.4);margin-left:4px"></span>ليلية (8م – 8ص)</span>
+    </div>
+    <div class="tl-leg" id="tlLeg"></div>
+  </div>
+
+  <!-- Table -->
+  <div class="sec">جدول الفترات</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>الوحدات</th><th>من</th><th>إلى</th>
+          <th>المدة</th><th>الفترة</th><th>ملاحظة</th>
+        </tr>
+      </thead>
+      <tbody id="slotsBody">
+        <tr><td colspan="7"><div class="empty"><div class="icon">⏱</div><p>لا توجد فترات حالياً</p></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+</div>
+
+<!-- رسالة النجاح / التحديث -->
+<div id="successToast" class="success-toast">✓ تم التحديث بنجاح</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/firebase-messaging.js"></script>
+<script>
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const n=new Date();
+document.getElementById('todayDate').textContent=DAYS[n.getDay()]+' '+n.getDate()+' '+MONTHS[n.getMonth()]+' '+n.getFullYear();
+
+const COLORS=['c1','c2','c3','c4','c5','c6'];
+let slots=[];
+let syncListener = null;
+
+function updateSyncIndicator(online) {
+    const el = document.getElementById('syncIndicator');
+    if (!el) return;
+    if (online) {
+        el.classList.remove('sync-offline');
+        el.classList.add('sync-online');
+        el.querySelector('.sync-text').textContent = 'متصل (مزامنة لحظية)';
+    } else {
+        el.classList.remove('sync-online');
+        el.classList.add('sync-offline');
+        el.querySelector('.sync-text').textContent = 'غير متصل (حفظ محلي)';
+    }
+}
+
+function getCloudFirestore() {
+    if (typeof firebase === 'undefined' || !firebase.firestore) return null;
+    if (!firebase.apps || !firebase.apps.length) return null;
+    return firebase.firestore();
+}
+
+/** تفعيل المزامنة اللحظية للفني */
+function startSync() {
+    const db = getCloudFirestore();
+    if (!db) {
+        updateSyncIndicator(false);
+        return;
+    }
+
+    // Connectivity check
+    db.collection('_health_check').doc('connectivity').get()
+        .then(() => updateSyncIndicator(true))
+        .catch((err) => {
+            console.warn('[Sync] Connectivity check failed, but checking for permission-denied:', err);
+            if (err.code === 'permission-denied' || err.code === 'not-found') {
+                updateSyncIndicator(true);
+            } else {
+                updateSyncIndicator(false);
+            }
+        });
+
+    // إذا كان هناك مستمع قديم، نقوم بإغلاقه
+    if (syncListener) syncListener();
+
+    console.log('[Sync] بدء المزامنة اللحظية للفني...');
+    
+    syncListener = db.collection('shared_data').doc('operation_units_latest')
+        .onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data && data.slots) {
+                    console.log('[Sync] تم استلام تحديث جديد:', data.slots.length, 'فترات');
+                    slots = data.slots;
+                    render();
+                    // إظهار توست بسيط عند التحديث
+                    if (typeof showToast === 'function') showToast('تم تحديث البيانات ');
+                }
+            }
+        }, (error) => {
+            console.error('[Sync] خطأ في المزامنة اللحظية:', error);
+        });
+}
+
+// دالة محاكاة لـ showToast إذا لم تكن موجودة
+function showToast(msg) {
+    const toast = document.getElementById('successToast') || { style: {}, textContent: '' };
+    if (toast.id) {
+        toast.textContent = '✓ ' + msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+}
+
+function fmt(h){
+  if(h===0||h===24)return'12:00 ص';
+  if(h<12)return h+':00 ص';
+  if(h===12)return'12:00 م';
+  return(h-12)+':00 م';
+}
+
+function getPeriod(from){
+  if(from>=8&&from<14)return{label:'صباحية',cls:'bm',icon:'🌅'};
+  if(from>=14&&from<20)return{label:'مسائية',cls:'be',icon:'🌆'};
+  return{label:'ليلية',cls:'bn',icon:'🌙'};
+}
+
+function dur(from,to){return to>from?to-from:(24-from)+to;}
+
+(function buildHrs(){
+  const w=document.getElementById('tlHrs');
+  if(!w) return;
+  [0,3,6,9,12,15,18,21,24].forEach(h=>{
+    const s=document.createElement('span');
+    s.textContent=h===0||h===24?'12ص':h===12?'12م':h<12?h+'ص':(h-12)+'م';
+    w.appendChild(s);
+  });
+})();
+
+function render(){
+  const body=document.getElementById('slotsBody');
+  const bar=document.getElementById('tlBar');
+  const leg=document.getElementById('tlLeg');
+  if(!body || !bar || !leg) return;
+  bar.innerHTML='';leg.innerHTML='';
+
+  if(!slots || !slots.length){
+    body.innerHTML='<tr><td colspan="7"><div class="empty"><div class="icon">⏱</div><p>لا توجد فترات حالياً</p></div></td></tr>';
+    document.getElementById('statSlots').textContent='0';
+    document.getElementById('statHours').textContent='0';
+    return;
+  }
+
+  body.innerHTML='';
+  let totalH=0;
+  slots.forEach((s,i)=>{
+    const d=dur(s.from,s.to);
+    totalH+=d;
+    const p=getPeriod(s.from);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><span class="upill">${s.units}</span></td>
+      <td>${fmt(s.from)}</td>
+      <td>${fmt(s.to)}</td>
+      <td><span class="dur">${d} ساعة</span></td>
+      <td><span class="badge ${p.cls}">${p.icon} ${p.label}</span></td>
+      <td style="color:var(--muted);font-size:13px">${s.note||'—'}</td>`;
+    body.appendChild(tr);
+
+    const seg=document.createElement('div');
+    seg.className='tl-seg '+(s.color || COLORS[i % COLORS.length]);
+    seg.style.right=(s.from/24*100)+'%';
+    seg.style.width=(d/24*100)+'%';
+    seg.title=`${s.units} وحدات | ${fmt(s.from)} ← ${fmt(s.to)}`;
+    seg.textContent=s.units;
+    bar.appendChild(seg);
+
+    const li=document.createElement('span');
+    li.innerHTML=`<span class="ldot ${s.color || COLORS[i % COLORS.length]}"></span>${fmt(s.from)} – ${fmt(s.to)} (${s.units} وحدات)`;
+    leg.appendChild(li);
+  });
+
+  document.getElementById('statSlots').textContent=slots.length;
+  document.getElementById('statHours').textContent=totalH;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    startSync();
+});
+
+render();
+</script>
+</body>
+</html>

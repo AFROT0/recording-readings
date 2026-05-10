@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - تطبيق تسجيل القراءات</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            margin: 0;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 80%);
+            pointer-events: none;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .company-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            background: #fff url('splash/logo.png') no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            border: 4px solid #fff;
+        }
+
+        .company-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .app-title {
+            font-size: 0.9rem;
+            color: #546e7a;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .login-header {
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            color: #1a237e;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+            text-align: right;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #455a64;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 15px;
+            color: #90a4ae;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.9rem 2.8rem 0.9rem 1rem;
+            border: 2px solid #eceff1;
+            border-radius: 14px;
+            background-color: #fcfdfe;
+            color: #263238;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-align: right;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3949ab;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(57, 73, 171, 0.1);
+        }
+
+        .input-group input:focus + i {
+            color: #3949ab;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: #3949ab;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-login:hover {
+            background: #303f9f;
+            box-shadow: 0 8px 15px rgba(57, 73, 171, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #d32f2f;
+            margin-top: 1.25rem;
+            font-size: 0.85rem;
+            display: none;
+            padding: 0.75rem;
+            background-color: #ffebee;
+            border-radius: 10px;
+            border: 1px solid #ffcdd2;
+            font-weight: 600;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .loading {
+            display: none;
+            color: #3949ab;
+            margin-top: 1.25rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* زر تبديل الوضع الليلي */
+        .theme-switch-wrapper {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+        }
+
+        .theme-switch-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #3949ab;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-switch-btn:hover {
+            background: rgba(57, 73, 171, 0.1);
+            transform: rotate(15deg);
+        }
+
+        body.dark-mode .theme-switch-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffd700;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            .login-container {
+                padding: 2rem 1.5rem;
+                border-radius: 20px;
+            }
+            .company-logo {
+                width: 85px;
+                height: 85px;
+            }
+            .company-name {
+                font-size: 0.9rem;
+            }
+            .login-header h2 {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Dark mode support */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        body.dark-mode .login-container {
+            background-color: #1e293b;
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        body.dark-mode .company-name { color: #f8fafc; }
+        body.dark-mode .app-title { color: #94a3b8; }
+        body.dark-mode .login-header h2 { color: #f8fafc; }
+        body.dark-mode .input-group label { color: #cbd5e1; }
+        
+        body.dark-mode .input-group input {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+
+        body.dark-mode .input-group input:focus {
+            border-color: #6366f1;
+            background-color: #0f172a;
+        }
+
+        body.dark-mode .btn-login {
+            background: #4f46e5;
+        }
+
+        body.dark-mode .btn-login:hover {
+            background: #6366f1;
+        }
+
+        body.dark-mode .error-message {
+            background-color: rgba(211, 47, 47, 0.1);
+            border-color: rgba(211, 47, 47, 0.3);
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="theme-switch-wrapper">
+            <button class="theme-switch-btn" onclick="toggleTheme()" title="تبديل الوضع">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
+        <div class="login-header">
+            <div class="company-logo"></div>
+            <div class="company-name">الشركة القابضة لمياه الشرب والصرف الصحي</div>
+            <div class="app-title"> محطة مياه ميت خميس ترحب بكم</div>
+            <h2><i class="fas fa-user-shield"></i> تسجيل الدخول</h2>
+        </div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">البريد الإلكتروني</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" required placeholder="أدخل البريد الإلكتروني">
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="password">كلمة المرور</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-login" id="loginBtn">دخول</button>
+        </form>
+        <div class="error-message" id="errorMessage">البريد الإلكتروني أو كلمة المرور غير صحيحة</div>
+        <div class="loading" id="loadingMessage"><i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...</div>
+    </div>
+
+    <!-- Firebase SDK (v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Cordova -->
+    <script src="cordova.js"></script>
+    <script>
+        // Handle missing cordova.js gracefully in web version
+        if (typeof cordova === 'undefined') {
+            window.cordova = {
+                platformId: 'browser',
+                ready: function(callback) { callback(); }
+            };
+        }
+    </script>
+
+    <!-- Auth Script -->
+    <script src="js/auth.js"></script>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Theme init
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('theme');
+            const icon = document.getElementById('themeIcon');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (icon) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // سجل رفع المعمل — .add() فقط (لا تعديل لاحق)
+    match /users/{userId}/manager_lab_uploads/{docId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if false;
+    }
+
+    // سجل رفع خطة التشغيل — .add() فقط
+    match /users/{userId}/manager_op_plan_uploads/{docId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if false;
+    }
+
+    // نسخة حالية للقراءة بدون orderBy / بدون فهرس مركب (set بعد كل رفع)
+    match /users/{userId}/app_sync_snapshots/{snapId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && (snapId == 'lab' || snapId == 'opsplan' || snapId == 'operation_units');
+      allow delete: if false;
+    }
+
+    // مجموعة مشتركة لمزامنة البيانات بين الأدوار المختلفة
+    match /shared_data/{docId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && (docId == 'lab_latest' || docId == 'ops_latest' || docId == 'operation_units_latest');
+      allow delete: if false;
+    }
+  }
+}
+
