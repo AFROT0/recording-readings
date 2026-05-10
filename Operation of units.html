@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خطة تشغيل المرشحة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d1117; --surface:#161b22; --card:#1c2333; --border:#30363d;
+  --accent:#1d9e75; --accent-light:#2dcc99; --accent-dim:rgba(29,158,117,0.15);
+  --text:#e6edf3; --muted:#7d8590; --danger:#e24b4a; --info:#378add;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
+
+/* ── Header ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
+.hbrand{display:flex;align-items:center;gap:12px;}
+.hicon{width:36px;height:36px;background:var(--accent-dim);border:1px solid var(--accent);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.hicon svg{width:18px;height:18px;stroke:var(--accent-light);}
+.header h1{font-size:18px;font-weight:700;}
+.hdate{font-size:13px;color:var(--muted);}
+.btn-print{background:transparent;border:1px solid var(--border);color:var(--muted);
+  padding:7px 16px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:13px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-print:hover{border-color:var(--accent);color:var(--accent-light);}
+.btn-save-manual{background:var(--accent);border:none;color:#fff;
+  padding:7px 16px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:13px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;font-weight:700;}
+.btn-save-manual:hover{background:var(--accent-light);transform:translateY(-1px);}
+.btn-save-manual:active{transform:translateY(0);}
+.btn-save-manual svg{width:14px;height:14px;}
+
+/* ── Layout ── */
+.main{max-width:900px;margin:0 auto;padding:2rem;}
+.sec{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin-bottom:12px;}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:2rem;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.stat-val{font-size:28px;font-weight:700;}
+.c-green{color:var(--accent-light);}
+.c-blue{color:#85b7eb;}
+
+/* ── Timeline ── */
+.tl-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:2rem;}
+.tl-hrs{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;padding:0 2px;}
+.tl-bar{height:40px;background:var(--surface);border-radius:6px 6px 0 0;
+  position:relative;overflow:hidden;border:1px solid var(--border);border-bottom:none;}
+.tl-seg{position:absolute;height:100%;border-radius:3px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;overflow:hidden;}
+.tl-zones{display:flex;height:8px;border-radius:0 0 6px 6px;overflow:hidden;border:1px solid var(--border);border-top:none;}
+.zone{height:100%;}
+.z-morning{background:rgba(55,138,221,.45);}
+.z-evening{background:rgba(127,119,221,.45);}
+.z-night{background:rgba(29,158,117,.3);}
+.tl-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12px;color:var(--muted);}
+.ldot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-left:5px;}
+
+/* ── Form ── */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:2rem;}
+.form-row{display:grid;grid-template-columns:110px 1fr 1fr 1fr auto;gap:12px;align-items:end;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg label{font-size:12px;color:var(--muted);font-weight:600;}
+
+/* time input: number THEN ص/م (RTL: number on right, ص/م on left) */
+.tg{display:flex;background:var(--surface);border:1px solid var(--border);
+  border-radius:7px;overflow:hidden;height:39px;transition:border-color .2s;}
+.tg:focus-within{border-color:var(--accent);}
+.tg input[type=number]{
+  background:transparent;border:none;border-left:1px solid var(--border);
+  color:var(--text);padding:0 10px;font-family:'Cairo',sans-serif;
+  font-size:16px;font-weight:700;outline:none;width:60px;text-align:center;
+  -moz-appearance:textfield;
+  appearance:textfield;
+}
+.tg input[type=number]::-webkit-outer-spin-button,
+.tg input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+.tg select{
+  background:transparent;border:none;color:var(--text);padding:0 10px;
+  font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;
+  outline:none;cursor:pointer;flex:1;
+}
+.tg select option{background:#1c2333;}
+
+.sf{background:var(--surface);border:1px solid var(--border);color:var(--text);
+  padding:0 12px;border-radius:7px;font-family:'Cairo',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;height:39px;width:100%;}
+.sf:focus{border-color:var(--accent);}
+.sf option{background:#1c2333;}
+
+.btn-add{background:var(--accent);border:none;color:#fff;padding:0 20px;
+  border-radius:7px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:background .2s;white-space:nowrap;height:39px;}
+.btn-add:hover{background:var(--accent-light);}
+
+.warn-box{background:rgba(239,159,39,.12);border:1px solid rgba(239,159,39,.4);
+  color:#EF9F27;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
+
+/* ── Table ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface);}
+th{padding:11px 14px;font-size:12px;font-weight:600;color:var(--muted);text-align:right;border-bottom:1px solid var(--border);}
+td{padding:12px 14px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:700;}
+.bm{background:rgba(55,138,221,.18);color:#85b7eb;}
+.be{background:rgba(127,119,221,.18);color:#afa9ec;}
+.bn{background:rgba(29,158,117,.15);color:#5dcaa5;}
+.upill{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  background:var(--accent-dim);border:1px solid var(--accent);border-radius:8px;
+  font-weight:700;font-size:15px;color:var(--accent-light);}
+.dur{color:var(--muted);font-size:13px;}
+.btn-del{background:transparent;border:1px solid transparent;color:var(--muted);
+  width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.btn-del:hover{border-color:var(--danger);color:var(--danger);background:rgba(226,75,74,.1);}
+.empty{text-align:center;padding:3rem;color:var(--muted);}
+.empty .icon{font-size:30px;margin-bottom:8px;opacity:.4;}
+
+/* ── Responsive Adjustments ── */
+@media (max-width: 768px) {
+  .header { padding: 0 1rem; height: auto; padding-top: 10px; padding-bottom: 10px; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .header h1 { font-size: 16px; }
+  .hbrand { width: 100%; justify-content: space-between; }
+  .main { padding: 1rem; }
+  .form-row { grid-template-columns: 1fr 1fr; gap: 15px; }
+  .form-row .fg:last-of-type { grid-column: span 2; }
+  .btn-add { width: 100%; grid-column: span 2; margin-top: 10px; }
+  .stats { grid-template-columns: 1fr; }
+  .footer { grid-template-columns: 1fr; }
+  .tbl-wrap { overflow-x: auto; }
+  table { min-width: 600px; }
+  .tl-hrs span:nth-child(even) { display: none; } /* Show fewer labels on mobile */
+}
+
+@media (max-width: 480px) {
+  .header .hbrand { flex-wrap: wrap; gap: 8px; }
+  .header .hbrand button { order: 1; }
+  .header .hbrand .hicon { order: 2; }
+  .header .hbrand div:last-child { order: 3; width: 100%; }
+  .form-row { grid-template-columns: 1fr; }
+  .form-row .fg, .form-row .fg:last-of-type, .btn-add { grid-column: span 1; }
+  .stat-val { font-size: 22px; }
+  .tl-hrs { font-size: 9px; }
+}
+
+/* ── Sync Indicator ── */
+.sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ccc;
+}
+.sync-online .sync-dot { background: #2dcc99; box-shadow: 0 0 6px #2dcc99; }
+.sync-offline .sync-dot { background: #e24b4a; box-shadow: 0 0 6px #e24b4a; }
+.sync-text { color: var(--text); opacity: 0.7; font-size: 11px; }
+
+/* segment colors */
+.c1{background:rgba(29,158,117,.8);}
+.c2{background:rgba(55,138,221,.8);}
+.c3{background:rgba(127,119,221,.8);}
+.c4{background:rgba(239,159,39,.8);}
+.c5{background:rgba(226,75,74,.8);}
+.c6{background:rgba(93,202,165,.8);}
+
+/* ── Footer ── */
+.footer{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.5rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.footer-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:18px 20px;text-align:center;}
+.footer-role{font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:8px;}
+.footer-name{font-size:17px;font-weight:700;color:var(--text);}
+.footer-sig{margin-top:16px;border-top:1px dashed var(--border);padding-top:10px;
+  font-size:11px;color:var(--muted);}
+
+@media print{
+  body{background:#fff;color:#000;}
+  .header{position:static;background:#fff;border-bottom:1px solid #ccc;}
+  .btn-print,.btn-add,.btn-del,.form-card,.warn-box,.success-toast,.stats,.tl-wrap,.sync-indicator,.btn-save-manual{display:none!important;}
+  .main{padding:1rem;}
+  .tbl-wrap,.footer-card{border:1px solid #ccc;background:#fff;}
+  .stat-val,th,td,.footer-name{color:#000;}
+  .sec,.dur,.footer-role,.footer-sig{color:#666;}
+  .bm{background:#dbeafe;color:#1d4ed8;}
+  .be{background:#ede9fe;color:#5b21b6;}
+  .bn{background:#d1fae5;color:#065f46;}
+  .upill{background:#d1fae5;color:#065f46;border-color:#065f46;}
+  .footer{border-top:1px solid #ccc;}
+  .footer-sig{border-top:1px dashed #ccc;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hbrand">
+    <button class="btn-print" onclick="goBack()" style="margin-left: 15px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      رجوع
+    </button>
+    <div class="hicon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <div>
+      <h1>خطة تشغيل المرشحة</h1>
+      <div id="syncIndicator" class="sync-indicator sync-offline" style="margin-top: 4px;">
+        <span class="sync-dot"></span>
+        <span class="sync-text" style="font-size: 11px;">جاري الاتصال...</span>
+      </div>
+      <div class="hdate" id="todayDate"></div>
+    </div>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <button id="manualSaveBtn" class="btn-save-manual" onclick="saveToCloudManual()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+        <polyline points="7 3 7 8 15 8"></polyline>
+      </svg>
+      حفظ الآن
+    </button>
+    <button class="btn-print" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 6 2 18 2 18 9"/>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      طباعة
+    </button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-lbl">إجمالي الفترات</div>
+      <div class="stat-val c-green" id="statSlots">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-lbl">إجمالي ساعات التشغيل</div>
+      <div class="stat-val c-blue" id="statHours">0</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="tl-wrap">
+    <div class="sec">الجدول الزمني — 24 ساعة</div>
+    <div class="tl-hrs" id="tlHrs"></div>
+    <div class="tl-bar" id="tlBar"></div>
+    <!-- RTL: right=0h → left=24h
+         zone order in DOM (right to left): night(0-8)=33.3%, morning(8-14)=25%, evening(14-20)=25%, night(20-24)=16.7% -->
+    <div class="tl-zones">
+      <div class="zone z-night"   style="width:16.67%"></div>
+      <div class="zone z-evening" style="width:25%"></div>
+      <div class="zone z-morning" style="width:25%"></div>
+      <div class="zone z-night"   style="width:33.33%"></div>
+    </div>
+    <div style="display:flex;gap:18px;margin-top:10px;font-size:11px;color:var(--muted);flex-wrap:wrap">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(55,138,221,.55);margin-left:4px"></span>صباحية (8ص – 2م)</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(127,119,221,.55);margin-left:4px"></span>مسائية (2م – 8م)</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(29,158,117,.4);margin-left:4px"></span>ليلية (8م – 8ص)</span>
+    </div>
+    <div class="tl-leg" id="tlLeg"></div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-card">
+    <div class="sec" style="margin-bottom:14px;">إضافة فترة تشغيل</div>
+    <div id="warnBox" class="warn-box">⚠ تحذير: هذه الفترة تتداخل مع فترة موجودة بالفعل</div>
+    <div class="form-row">
+
+      <div class="fg">
+        <label>عدد الوحدات</label>
+        <select id="fUnits" class="sf">
+          <option value="1">1 وحدة</option>
+          <option value="2">2 وحدة</option>
+          <option value="3">3 وحدات</option>
+          <option value="4" selected>4 وحدات</option>
+        </select>
+      </div>
+
+      <!-- من: الرقم أولاً ثم ص/م -->
+      <div class="fg">
+        <label>من الساعة</label>
+        <div class="tg">
+          <input type="number" id="fFromH" min="1" max="12" value="8" placeholder="1-12">
+          <select id="fFromAP">
+            <option value="am">ص</option>
+            <option value="pm">م</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- إلى: الرقم أولاً ثم ص/م -->
+      <div class="fg">
+        <label>إلى الساعة</label>
+        <div class="tg">
+          <input type="number" id="fToH" min="1" max="12" value="2" placeholder="1-12">
+          <select id="fToAP">
+            <option value="am">ص</option>
+            <option value="pm" selected>م</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>ملاحظة (اختياري)</label>
+        <input type="text" id="fNote" class="sf" placeholder="مثال: تشغيل عادي" maxlength="40">
+      </div>
+
+      <button class="btn-add" onclick="addSlot()">+ إضافة</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="sec">جدول الفترات</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>الوحدات</th><th>من</th><th>إلى</th>
+          <th>المدة</th><th>الفترة</th><th>ملاحظة</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="slotsBody">
+        <tr><td colspan="8"><div class="empty"><div class="icon">⏱</div><p>لا توجد فترات — أضف فترة من الأعلى</p></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-card">
+      <div class="footer-role">مدير التشغيل</div>
+      <div class="footer-name">م/ محمد خليل</div>
+      <div class="footer-sig">التوقيع</div>
+    </div>
+    <div class="footer-card">
+      <div class="footer-role">مدير المحطة</div>
+      <div class="footer-name">م/ محمد عبدالرازق</div>
+      <div class="footer-sig">التوقيع</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- رسالة النجاح -->
+<div id="successToast" class="success-toast">✓ تم الحفظ بنجاح</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/firebase-messaging.js"></script>
+<script>
+// Role and Read-only check
+const urlParams = new URLSearchParams(window.location.search);
+const isReadOnly = urlParams.get('ro') === '1' || window.localStorage.getItem('userRole') === 'tech';
+
+if (isReadOnly) {
+    document.querySelector('.form-card').style.display = 'none';
+    const manualBtn = document.getElementById('manualSaveBtn');
+    if (manualBtn) manualBtn.style.display = 'none';
+    document.title = 'خطة تشغيل المرشحة (عرض فقط)';
+    // Hide delete buttons after render
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('successToast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function goBack() {
+    if (window.localStorage.getItem('userRole') === 'tech' || isReadOnly) {
+        window.location.href = 'tech.html';
+    } else {
+        window.location.href = 'ops.html';
+    }
+}
+
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const n=new Date();
+document.getElementById('todayDate').textContent=DAYS[n.getDay()]+' '+n.getDate()+' '+MONTHS[n.getMonth()]+' '+n.getFullYear();
+
+const COLORS=['c1','c2','c3','c4','c5','c6'];
+let slots=[],ci=0;
+let autoSaveTimer = null;
+
+function updateSyncIndicator(online) {
+    const el = document.getElementById('syncIndicator');
+    if (!el) return;
+    if (online) {
+        el.classList.remove('sync-offline');
+        el.classList.add('sync-online');
+        el.querySelector('.sync-text').textContent = 'متصل (مزامنة لحظية)';
+    } else {
+        el.classList.remove('sync-online');
+        el.classList.add('sync-offline');
+        el.querySelector('.sync-text').textContent = 'غير متصل (حفظ محلي)';
+    }
+}
+
+// Firebase Helpers (simplified from app.js)
+function getCloudFirestore() {
+    if (typeof firebase === 'undefined' || !firebase.firestore) return null;
+    if (!firebase.apps || !firebase.apps.length) return null;
+    return firebase.firestore();
+}
+
+async function waitForAuthUid(maxMs = 10000) {
+    let waited = 0;
+    while (waited < maxMs) {
+        const user = firebase.auth().currentUser;
+        if (user) return user.uid;
+        await new Promise(r => setTimeout(r, 200));
+        waited += 200;
+    }
+    return null;
+}
+
+function saveToCloudManual() {
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    saveToCloud(false);
+}
+
+async function saveToCloud(silent = true) {
+    if (isReadOnly) return;
+    const db = getCloudFirestore();
+    if (!db) return;
+    const uid = await waitForAuthUid();
+    if (!uid) return;
+
+    const ts = firebase.firestore.FieldValue.serverTimestamp();
+    const payload = {
+        slots,
+        updatedAt: ts,
+        updatedBy: uid
+    };
+
+    try {
+        // Save to user's collection
+        await db.collection('users').doc(uid).collection('app_sync_snapshots').doc('operation_units').set(payload);
+        // Save to shared collection for tech users
+        await db.collection('shared_data').doc('operation_units_latest').set(payload);
+        console.log('Saved to cloud:', payload.slots.length, 'slots');
+        if (!silent) showToast('✓ تم الحفظ بنجاح');
+
+        // إرسال إشعار للفنيين بتحديث خطة تشغيل المرشحة
+        if (typeof notifyMurashahaPlanUpdated === 'function') {
+            void notifyMurashahaPlanUpdated();
+        }
+    } catch (e) {
+        console.error('Error saving to cloud:', e);
+        if (!silent) showToast('⚠ تعذر الحفظ');
+    }
+}
+
+function scheduleAutoSave() {
+    if (isReadOnly) return;
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+        saveToCloud(true);
+    }, 2500); // Save after 2.5s of inactivity
+}
+
+async function loadFromCloud() {
+    const db = getCloudFirestore();
+    if (!db) {
+        updateSyncIndicator(false);
+        return;
+    }
+
+    // Connectivity check
+    db.collection('_health_check').doc('connectivity').get()
+        .then(() => updateSyncIndicator(true))
+        .catch((err) => {
+            console.warn('[Sync] Connectivity check failed, but checking for permission-denied:', err);
+            // If it's permission-denied or similar, it means we ARE connected but just can't read this specific test doc
+            if (err.code === 'permission-denied' || err.code === 'not-found') {
+                updateSyncIndicator(true);
+            } else {
+                updateSyncIndicator(false);
+            }
+        });
+
+    try {
+        let data;
+        if (isReadOnly) {
+            // Tech users load from shared data
+            const doc = await db.collection('shared_data').doc('operation_units_latest').get();
+            if (doc.exists) data = doc.data();
+        } else {
+            // Managers load from their own data
+            const uid = await waitForAuthUid();
+            if (uid) {
+                const doc = await db.collection('users').doc(uid).collection('app_sync_snapshots').doc('operation_units').get();
+                if (doc.exists) data = doc.data();
+            }
+        }
+
+        if (data && data.slots) {
+            slots = data.slots;
+            render();
+        }
+    } catch (e) {
+        console.error('Error loading from cloud:', e);
+    }
+}
+
+function to24(h,ap){h=parseInt(h);return ap==='am'?(h===12?0:h):(h===12?12:h+12);}
+
+function fmt(h){
+  if(h===0||h===24)return'12:00 ص';
+  if(h<12)return h+':00 ص';
+  if(h===12)return'12:00 م';
+  return(h-12)+':00 م';
+}
+
+function getPeriod(from){
+  if(from>=8&&from<14)return{label:'صباحية',cls:'bm',icon:'🌅'};
+  if(from>=14&&from<20)return{label:'مسائية',cls:'be',icon:'🌆'};
+  return{label:'ليلية',cls:'bn',icon:'🌙'};
+}
+
+function dur(from,to){return to>from?to-from:(24-from)+to;}
+
+(function buildHrs(){
+  const w=document.getElementById('tlHrs');
+  if(!w) return;
+  [0,3,6,9,12,15,18,21,24].forEach(h=>{
+    const s=document.createElement('span');
+    s.textContent=h===0||h===24?'12ص':h===12?'12م':h<12?h+'ص':(h-12)+'م';
+    w.appendChild(s);
+  });
+})();
+
+function render(){
+  const body=document.getElementById('slotsBody');
+  const bar=document.getElementById('tlBar');
+  const leg=document.getElementById('tlLeg');
+  if(!body || !bar || !leg) return;
+  bar.innerHTML='';leg.innerHTML='';
+
+  if(!slots || !slots.length){
+    body.innerHTML='<tr><td colspan="8"><div class="empty"><div class="icon">⏱</div><p>لا توجد فترات — أضف فترة من الأعلى</p></div></td></tr>';
+    document.getElementById('statSlots').textContent='0';
+    document.getElementById('statHours').textContent='0';
+    return;
+  }
+
+  body.innerHTML='';
+  let totalH=0;
+  slots.forEach((s,i)=>{
+    const d=dur(s.from,s.to);
+    totalH+=d;
+    const p=getPeriod(s.from);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><span class="upill">${s.units}</span></td>
+      <td>${fmt(s.from)}</td>
+      <td>${fmt(s.to)}</td>
+      <td><span class="dur">${d} ساعة</span></td>
+      <td><span class="badge ${p.cls}">${p.icon} ${p.label}</span></td>
+      <td style="color:var(--muted);font-size:13px">${s.note||'—'}</td>
+      <td>${isReadOnly ? '' : `<button class="btn-del" onclick="delSlot(${i})" title="حذف">✕</button>`}</td>`;
+    body.appendChild(tr);
+
+    const seg=document.createElement('div');
+    seg.className='tl-seg '+(s.color || COLORS[i % COLORS.length]);
+    seg.style.right=(s.from/24*100)+'%';
+    seg.style.width=(d/24*100)+'%';
+    seg.title=`${s.units} وحدات | ${fmt(s.from)} ← ${fmt(s.to)}`;
+    seg.textContent=s.units;
+    bar.appendChild(seg);
+
+    const li=document.createElement('span');
+    li.innerHTML=`<span class="ldot ${s.color || COLORS[i % COLORS.length]}"></span>${fmt(s.from)} – ${fmt(s.to)} (${s.units} وحدات)`;
+    leg.appendChild(li);
+  });
+
+  document.getElementById('statSlots').textContent=slots.length;
+  document.getElementById('statHours').textContent=totalH;
+}
+
+function checkOverlap(from,to){
+  return slots.some(s=>from<to&&s.from<s.to&&from<s.to&&to>s.from);
+}
+
+function addSlot(){
+  if(isReadOnly) return;
+  const units=parseInt(document.getElementById('fUnits').value);
+  const fh=parseInt(document.getElementById('fFromH').value);
+  const fap=document.getElementById('fFromAP').value;
+  const th=parseInt(document.getElementById('fToH').value);
+  const tap=document.getElementById('fToAP').value;
+  const note=document.getElementById('fNote').value.trim();
+  const warn=document.getElementById('warnBox');
+
+  if(!fh||fh<1||fh>12||!th||th<1||th>12){alert('أدخل ساعة صحيحة بين 1 و 12');return;}
+
+  const from=to24(fh,fap);
+  const to=to24(th,tap);
+  if(from===to){alert('وقت البداية ووقت النهاية متطابقان');return;}
+
+  if(from<to&&checkOverlap(from,to)){
+    warn.style.display='block';
+    setTimeout(()=>warn.style.display='none',4000);
+    return;
+  }
+  warn.style.display='none';
+
+  slots.push({units,from,to,note,color:COLORS[ci++%COLORS.length]});
+  slots.sort((a,b)=>a.from-b.from);
+  document.getElementById('fNote').value='';
+  render();
+  scheduleAutoSave();
+}
+
+function delSlot(i){
+  if(isReadOnly) return;
+  slots.splice(i,1);
+  render();
+  scheduleAutoSave();
+}
+
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+    loadFromCloud();
+    // Re-check after a bit to ensure auth is ready
+    setTimeout(loadFromCloud, 2000);
+});
+
+render();
+</script>
+</body>
+</html>
