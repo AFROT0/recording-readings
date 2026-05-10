@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Firebase
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+
+# IDEs
+.vscode/
+.gemini/
+.windsurf/
+.idea/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Temporary/Fix Scripts
+fix_encoding.js
+recover.js
+clean_app.js
+fix_all_html.js
+fix_html.js
+fix_html_v2.js
+*.test
+*.bak
+diff.txt
+
+# Environment variables
+.env
+.env.local

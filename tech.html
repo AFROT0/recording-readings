@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق تسجيل القراءات</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="تسجيل القراءات">
+    <link rel="apple-touch-icon" href="splash/splash.png">
+    
+    <!-- Splash Screen for Apple Devices -->
+    <link rel="apple-touch-startup-image" href="splash/splash.png">
+
+
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body onload="hideSplash()">
+    <!-- Fake Splash Screen -->
+    <div id="fake-splash" class="modern-splash">
+        <div class="splash-content">
+            <div class="splash-logo-container">
+                <img src="splash/logo.png" alt="Logo" class="splash-logo">
+            </div>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+            </div>
+            <div class="splash-text">جاري تحميل البيانات...</div>
+        </div>
+    </div>
+
+    <!-- Notification Prompt Banner -->
+    <div id="notification-prompt-banner" class="notification-prompt-banner">
+        <div class="prompt-content">
+            <i class="fas fa-bell"></i>
+            <span>فعّل الإشعارات لتلقي تنبيهات فورية عند تحديث البيانات</span>
+        </div>
+        <div class="prompt-actions">
+            <button class="btn-prompt-allow" onclick="requestNotificationPermission()">تفعيل</button>
+            <button class="btn-prompt-dismiss" onclick="dismissNotificationPrompt()">لاحقاً</button>
+        </div>
+    </div>
+
+    <script>
+        function hideSplash() {
+            const splash = document.getElementById('fake-splash');
+            if (splash) {
+                setTimeout(() => {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                    setTimeout(() => splash.remove(), 500);
+                }, 1000); 
+            }
+        }
+    </script>
+    <!-- الشريط الجانبي -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>القائمة</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">×</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" onclick="showSection('mainMenu'); toggleSidebar();">
+                <i class="fas fa-home"></i> الصفحة الرئيسية
+            </a>
+            <a href="#" onclick="showSection('vacationSchedule'); toggleSidebar();">
+                <i class="fas fa-calendar-alt"></i> إدارة جدول الإجازات
+            </a>
+            <a href="#" onclick="showSection('colleaguesManagement'); toggleSidebar();">
+                <i class="fas fa-users"></i> إدارة زملاء العمل
+            </a>
+            <a href="#" onclick="showSection('averageRecords'); toggleSidebar();">
+                <i class="fas fa-database"></i> متوسط التسجيلات
+            </a>
+            <a href="#" onclick="showSection('operatingPlan'); toggleSidebar();">
+                <i class="fas fa-clipboard-list"></i> خطة التشغيل
+            </a>
+            <a href="tech_op_units.html">
+                <i class="fas fa-history"></i> خطة تشغيل المرشحة
+            </a>
+            <a href="#" onclick="showSection('labSection'); toggleSidebar();">
+                <i class="fas fa-flask"></i> المعمل
+            </a>
+            <a href="#" onclick="showSection('aboutProgram'); toggleSidebar();">
+                <i class="fas fa-info-circle"></i> حول البرنامج
+            </a>
+            <a href="#" onclick="logoutUser();" style="color: #e24b4a; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </a>
+        </nav>
+    </div>
+
+    <!-- زر فتح الشريط الجانبي -->
+    <button id="sidebarToggle" class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="container">
+
+
+        <!-- القائمة الرئيسية -->
+        <div id="mainMenu" class="section active">
+
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="openSection('akra')"><i class="fas fa-tint"></i> العكرة</button>
+                <button class="menu-btn" onclick="openSection('morashaha')"><i class="fas fa-filter"></i>
+                    المرشحة</button>
+                <button class="menu-btn" onclick="openSection('sludge')"><i class="fas fa-water"></i> Sludge</button>
+                <button class="menu-btn" onclick="openSection('decant')"><i class="fas fa-vial"></i> Decant</button>
+                <button class="menu-btn" onclick="openSection('booster')"><i class="fas fa-pump-soap"></i>
+                    Booster</button>
+                <button class="menu-btn" onclick="openSection('anbarChlor')"><i class="fas fa-flask"></i> عنبر
+                    الكلور</button>
+                <button class="menu-btn" onclick="openSection('kabayenChlor')"><i
+                        class="fas fa-prescription-bottle"></i> كبائن الكلور</button>
+                <button class="menu-btn" onclick="openSection('shabba')"><i class="fas fa-fill-drip"></i> الشبة</button>
+                <button class="menu-btn" onclick="openSection('electricity')"><i class="fas fa-bolt"></i> غرفة
+                    الكهرباء</button>
+                <button class="menu-btn btn-small-accent" onclick="window.location.href='tech_op_units.html'"><i class="fas fa-history"></i> خطة تشغيل المرشحة</button>
+                <button class="menu-btn special" onclick="openAllData()"><i class="fas fa-chart-bar"></i> عرض
+                    البيانات</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearAllData()"><i class="fas fa-trash-alt"></i> مسح جميع
+                    البيانات</button>
+                <button class="btn btn-manage-sections" onclick="showSection('sectionManagement')"><i
+                        class="fas fa-cog"></i> إدارة الأقسام</button>
+            </div>
+            <div class="theme-toggle-container" style="display: flex; gap: 10px; justify-content: center;">
+                <button id="themeToggle" class="theme-toggle-btn" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+            </div>
+            <div class="footer-signature">
+                <p>☕Created by 3froto </p>
+            </div>
+        </div>
+
+        <!-- قسم قراءة العكرة -->
+        <div id="akra" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">قراءة العكرة</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="akra-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('akra')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('akra')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('akra')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('akra')">🗑️ مسح القسم </button>
+            </div>
+        </div>
+
+        <!-- قسم قراءة المرشحة -->
+        <div id="morashaha" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">قراءة المرشحة</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="morashaha-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('morashaha')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('morashaha')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('morashaha')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('morashaha')">🗑️ مسح القسم </button>
+            </div>
+        </div>
+
+        <!-- قسم Sludge -->
+        <div id="sludge" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">Sludge</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="sludge-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('sludge')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('sludge')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('sludge')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('sludge')">🗑️ مسح القسم </button>
+            </div>
+        </div>
+
+        <!-- قسم Decant -->
+        <div id="decant" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">Decant</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="decant-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('decant')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('decant')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('decant')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('decant')">🗑️ مسح القسم </button>
+            </div>
+        </div>
+
+        <!-- قسم Booster -->
+        <div id="booster" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">Booster</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="booster-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('booster')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('booster')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('booster')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('booster')">🗑️ مسح القسم </button>
+            </div>
+        </div>
+
+        <!-- قسم عنبر الكلور - عمودين -->
+        <div id="anbarChlor" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">عنبر الكلور</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="anbarChlor-table"></table>
+            </div>
+            <!-- تسجيل الاسطوانات الفارغة (بدون thead) -->
+            <div class="table-wrapper">
+                <h3 style="margin: 12px 0; font-size: 16px; color: #333;">تسجيل الأسطوانات الفارغة</h3>
+                <table id="anbarChlor-empty-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('anbarChlor')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('anbarChlor')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('anbarChlor')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('anbarChlor')">🗑️ مسح القسم </button>
+                <button class="btn btn-clear" onclick="clearAnbarChlorEmpty()">🗑️ مسح الأسطوانات الفارغة</button>
+            </div>
+        </div>
+
+        <!-- قسم كبائن الكلور -->
+        <div id="kabayenChlor" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">كبائن الكلور</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="kabayenChlor-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('kabayenChlor')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('kabayenChlor')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('kabayenChlor')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('kabayenChlor')">🗑️ مسح القسم </button>
+            </div>
+        </div>
+
+        <!-- قسم عرض كل البيانات -->
+        <div id="allData" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="closeAllData()">← رجوع</button>
+                <h2 class="section-title">عرض جميع البيانات</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="allData-table"></table>
+            </div>
+            <div class="action-buttons"></div>
+        </div>
+
+        <!-- قسم تسجيل قراءه خزانات الشبة -->
+        <div id="shabba" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title"> قراءه خزانات الشبة</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="shabba-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('shabba')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('shabba')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('shabba')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('electricity')">غرفة الكهرباء</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('shabba')">🗑️ مسح القسم </button>
+            </div>
+        </div>
+
+        <!-- قسم غرفة الكهرباء -->
+        <div id="electricity" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">غرفة الكهرباء</h2>
+            </div>
+            <div class="table-wrapper">
+                <table id="electricity-table"></table>
+            </div>
+            <div class="quick-nav">
+                <button class="quick-nav-btn" onclick="scrollToNextEmpty('electricity')">📝 التالي الفارغ</button>
+            </div>
+            <div class="cell-controls">
+                <button class="btn btn-add-cell" onclick="addCell('electricity')">➕ إضافة خلية</button>
+                <button class="btn btn-remove-cell" onclick="removeCell('electricity')">➖ حذف خلية</button>
+            </div>
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearData('electricity')">🗑️ مسح القسم</button>
+            </div>
+        </div>
+
+        <!-- قسم متوسط التسجيلات -->
+        <div id="averageRecords" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">متوسط التسجيلات</h2>
+            </div>
+
+            <div class="tabs-container" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <button id="btn-avg-morashaha" class="btn" style="background-color: #667eea; color: white;"
+                    onclick="switchAvgTab('morashaha')">الطلمبات المرشحة</button>
+                <button id="btn-avg-akra" class="btn"
+                    style="background-color: transparent; border: 1px solid #667eea; color: var(--text-color);"
+                    onclick="switchAvgTab('akra')">الطلمبات العكرة</button>
+            </div>
+
+            <!-- Content for Morashaha -->
+            <div id="avg-content-morashaha" class="avg-tab-content">
+                <div class="toolbar"
+                    style="display:flex; justify-content:space-between; margin-bottom: 15px; align-items:center;">
+                    <h3 style="color: var(--text-color);">الطلمبات المرشحة</h3>
+                    <button class="btn btn-add-cell" onclick="toggleAddAvg('morashaha')">+ إضافة سجل</button>
+                </div>
+                <div class="stats" id="stats-morashaha"
+                    style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;"></div>
+                <div class="table-wrapper">
+                    <table class="avg-table" id="tbl-morashaha">
+                        <colgroup>
+                            <col class="col-pumps">
+                            <col class="col-flow">
+                            <col class="col-press">
+                            <col class="col-actions">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>الطلمبات العاملة</th>
+                                <th>التصرف (ل/ث)</th>
+                                <th>الضغط (بار)</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-body-morashaha"></tbody>
+                    </table>
+                </div>
+
+                <div class="add-panel" id="add-panel-morashaha" style="display:none;">
+                    <h4>اختر الطلمبات العاملة</h4>
+                    <div class="pump-checks" id="pump-checks-morashaha"></div>
+                    <div class="add-fields">
+                        <div class="field-group">
+                            <label>التصرف (ل/ث)</label>
+                            <input class="cell-input" type="number" id="add-flow-morashaha">
+                        </div>
+                        <div class="field-group">
+                            <label>الضغط (بار)</label>
+                            <input class="cell-input" type="number" step="0.1" id="add-pressure-morashaha">
+                        </div>
+                        <div class="add-actions">
+                            <button class="btn btn-save" onclick="addAvgRow('morashaha')">حفظ</button>
+                            <button class="btn btn-clear" onclick="toggleAddAvg('morashaha')">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content for Akra -->
+            <div id="avg-content-akra" class="avg-tab-content" style="display:none;">
+                <div class="toolbar"
+                    style="display:flex; justify-content:space-between; margin-bottom: 15px; align-items:center;">
+                    <h3 style="color: var(--text-color);">الطلمبات العكرة</h3>
+                    <button class="btn btn-add-cell" onclick="toggleAddAvg('akra')">+ إضافة سجل</button>
+                </div>
+                <div class="stats" id="stats-akra" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
+                </div>
+                <div class="table-wrapper">
+                    <table class="avg-table" id="tbl-akra">
+                        <colgroup>
+                            <col class="col-pumps">
+                            <col class="col-flow">
+                            <col class="col-actions">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>الطلمبات العاملة</th>
+                                <th>التصرف (ل/ث)</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-body-akra"></tbody>
+                    </table>
+                </div>
+
+                <div class="add-panel" id="add-panel-akra" style="display:none;">
+                    <h4>اختر الطلمبات العاملة</h4>
+                    <div class="pump-checks" id="pump-checks-akra"></div>
+                    <div class="add-fields">
+                        <div class="field-group">
+                            <label>التصرف (ل/ث)</label>
+                            <input class="cell-input" type="number" id="add-flow-akra">
+                        </div>
+                        <div class="add-actions">
+                            <button class="btn btn-save" onclick="addAvgRow('akra')">حفظ</button>
+                            <button class="btn btn-clear" onclick="toggleAddAvg('akra')">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cross-nav">
+                <button class="cross-nav-btn" onclick="openSection('akra')">العكرة</button>
+                <button class="cross-nav-btn" onclick="openSection('morashaha')">المرشحة</button>
+                <button class="cross-nav-btn" onclick="openSection('sludge')">Sludge</button>
+                <button class="cross-nav-btn" onclick="openSection('decant')">Decant</button>
+                <button class="cross-nav-btn" onclick="openSection('booster')">Booster</button>
+                <button class="cross-nav-btn" onclick="openSection('anbarChlor')">عنبر الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('kabayenChlor')">كبائن الكلور</button>
+                <button class="cross-nav-btn" onclick="openSection('shabba')">الشبة</button>
+            </div>
+        </div>
+
+        <!-- قسم خطة التشغيل -->
+        <div id="operatingPlan" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">خطة التشغيل</h2>
+                <div id="syncIndicator" class="sync-indicator sync-offline">
+                    <span class="sync-dot"></span>
+                    <span class="sync-text">جاري الاتصال...</span>
+                </div>
+            </div>
+
+            <div class="op-page">
+                <div class="month-row">
+                    <span>شهر</span>
+                    <select id="opMonthSel" onchange="handleOpMonthChange()">
+                        <option value="يناير">يناير</option>
+                        <option value="فبراير">فبراير</option>
+                        <option value="مارس">مارس</option>
+                        <option value="أبريل">أبريل</option>
+                        <option value="مايو" selected>مايو</option>
+                        <option value="يونيو">يونيو</option>
+                        <option value="يوليو">يوليو</option>
+                        <option value="أغسطس">أغسطس</option>
+                        <option value="سبتمبر">سبتمبر</option>
+                        <option value="أكتوبر">أكتوبر</option>
+                        <option value="نوفمبر">نوفمبر</option>
+                        <option value="ديسمبر">ديسمبر</option>
+                    </select>
+                    <input type="number" id="opYearInput" value="2026" min="2020" max="2050"
+                        onchange="handleOpYearChange()">
+                </div>
+
+                <div class="op-toolbar">
+                    <button class="btn btn-clear" onclick="clearOpPlan()">مسح الكل</button>
+                    <button class="btn btn-save" onclick="checkAllOpPlan()">تحديد الكل</button>
+                </div>
+
+                <div class="op-subpage-nav">
+                    <a class="btn btn-save op-subpage-link" href="tech_op_units.html">خطة تشغيل المرشحة ←</a>
+                </div>
+
+                <div class="op-legend">
+                    <div class="legend-item">
+                        <div class="legend-box"><input type="checkbox" checked disabled></div>
+                        <span>وحدة مشغّلة</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box"><input type="checkbox" disabled></div>
+                        <span>وحدة متوقفة</span>
+                    </div>
+                </div>
+
+                <div class="table-wrapper op-table-wrapper">
+                    <table id="opScheduleTable">
+                        <colgroup>
+                            <col class="col-cat">
+                            <col class="col-num">
+                            <col class="col-week">
+                            <col class="col-week">
+                            <col class="col-week">
+                            <col class="col-week">
+                            <col class="col-notes">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="col-cat">الوحدة</th>
+                                <th rowspan="2" class="col-num">المعدة</th>
+                                <th colspan="4">الأسبوع</th>
+                                <th rowspan="2" class="col-notes">الملاحظات</th>
+                            </tr>
+                            <tr>
+                                <th class="sub col-week">١</th>
+                                <th class="sub col-week">٢</th>
+                                <th class="sub col-week">٣</th>
+                                <th class="sub col-week">٤</th>
+                            </tr>
+                        </thead>
+                        <tbody id="opTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم إدارة جدول الإجازات -->
+        <div id="vacationSchedule" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">إدارة جدول الإجازات</h2>
+            </div>
+
+            <!-- اختيار الوردية ونوع الإجازة -->
+            <div class="shift-selector">
+                <label for="shiftSelect">اختر الوردية:</label>
+                <select id="shiftSelect" onchange="loadVacationSchedule()">
+                    <option value="morning">الصباحية</option>
+                    <option value="evening">المسائية</option>
+                    <option value="night">الليلية</option>
+                </select>
+
+                <label for="vacationTypeSelect" class="shift-selector-label">نوع الإجازة:</label>
+                <select id="vacationTypeSelect">
+                    <option value="">-- اختر --</option>
+                    <option value="اعتيادي">اعتيادي</option>
+                    <option value="عارضة">عارضة</option>
+                    <option value="راحة">راحة</option>
+                </select>
+
+                <div class="shift-selector-info">
+                    <small>
+                        <i class="fas fa-info-circle"></i> كل وردية لها جدول منفصل ومستقل عن الورديات الأخرى
+                    </small>
+                </div>
+            </div>
+
+            <!-- جدول الإجازات -->
+            <div class="table-wrapper">
+                <table id="vacation-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">اليوم</th>
+                            <th style="width: 120px;">الاسم 1</th>
+                            <th style="width: 120px;">الاسم 2</th>
+                            <th style="width: 120px;">الاسم 3</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vacation-tbody">
+                        <!-- سيتم إنشاء الصفوف ديناميكياً -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-save" onclick="saveVacationSchedule()">💾 حفظ الجدول</button>
+                <button class="btn btn-share" onclick="shareVacationTable()"><i class="fas fa-share-alt"></i> مشاركة
+                    صورة</button>
+                <button class="btn btn-reset" onclick="resetVacationTable()"
+                    style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-redo"></i> إعادة تعيين
+                </button>
+            </div>
+
+            <!-- زر إظهار/إخفاء جدولة الإشعارات -->
+            <div class="notification-toggle-container">
+                <button class="btn btn-toggle-notifications" onclick="toggleNotificationScheduler()">
+                    <i class="fas fa-bell" id="notificationToggleIcon"></i>
+                    <span id="notificationToggleText">إظهار جدولة الإشعارات</span>
+                </button>
+            </div>
+
+            <!-- جدولة الإشعارات -->
+            <div class="notification-scheduler" id="notificationScheduler" style="display: none;">
+                <div class="notification-scheduler-header">
+                    <h3 class="notification-scheduler-title">
+                        <i class="fas fa-bell"></i> جدولة الإشعارات
+                    </h3>
+                </div>
+                <div class="notification-scheduler-body">
+                    <div class="notification-scheduler-controls">
+                        <div class="notification-control-group">
+                            <label for="notificationStartDate" class="notification-label">
+                                <i class="fas fa-calendar-alt"></i> تاريخ بداية الأسبوع (السبت)
+                            </label>
+                            <input type="date" id="notificationStartDate" class="notification-input">
+                        </div>
+                        <div class="notification-control-group">
+                            <label for="notificationTime" class="notification-label">
+                                <i class="fas fa-clock"></i> الوقت
+                            </label>
+                            <input type="time" id="notificationTime" value="08:00" class="notification-input">
+                        </div>
+                    </div>
+                    <div class="notification-scheduler-buttons">
+                        <button class="btn btn-save notification-btn" onclick="scheduleVacationNotifications()">
+                            <i class="fas fa-calendar-check"></i> جدولة الإشعارات
+                        </button>
+                        <button class="btn btn-clear notification-btn" onclick="cancelAllVacationNotifications()">
+                            <i class="fas fa-bell-slash"></i> إلغاء الإشعارات
+                        </button>
+                    </div>
+                    <div class="notification-scheduler-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>سيتم إرسال إشعار يومي في الوقت المحدد لمدة 7 أيام</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم إدارة زملاء العمل -->
+        <div id="colleaguesManagement" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">إدارة زملاء العمل</h2>
+            </div>
+
+            <!-- نموذج إضافة زميل جديد -->
+            <div class="colleague-form">
+                <h3 class="colleague-form-title">إضافة زميل جديد</h3>
+                <div class="colleague-form-controls">
+                    <input type="text" id="colleagueName" class="colleague-input" placeholder="اسم الزميل"
+                        onkeypress="if(event.key==='Enter') addColleague()">
+                    <button class="btn btn-save" onclick="addColleague()">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+            </div>
+
+            <!-- قائمة الزملاء -->
+            <div class="colleagues-list">
+                <h3 class="colleagues-list-title">قائمة الزملاء</h3>
+                <div id="colleaguesList" class="colleagues-list-container">
+                    <!-- سيتم إضافة الزملاء هنا ديناميكياً -->
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-clear" onclick="clearAllColleagues()">🗑️ مسح جميع الزملاء</button>
+            </div>
+        </div>
+
+        <!-- قسم إدارة الأقسام -->
+        <div id="sectionManagement" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">إدارة الأقسام</h2>
+            </div>
+
+            <div class="section-management-container">
+                <div class="section-management-header">
+                    <h3>إضافة قسم جديد</h3>
+                    <button class="btn btn-save" onclick="addSection()">
+                        <i class="fas fa-plus"></i> إضافة قسم جديد
+                    </button>
+                </div>
+
+                <div class="sections-list-container">
+                    <h3>الأقسام المخصصة</h3>
+                    <div id="customSectionsList" class="sections-list">
+                        <!-- سيتم إضافة الأقسام المخصصة هنا ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم المعمل -->
+        <div id="labSection" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">المعمل</h2>
+                <div id="syncIndicatorLab" class="sync-indicator sync-offline">
+                    <span class="sync-dot"></span>
+                    <span class="sync-text">جاري الاتصال...</span>
+                </div>
+            </div>
+            <div class="lab-content-wrapper" id="labContentWrapper">
+                <div class="wrapper" style="padding: 0.5rem 0.2rem;">
+                    <div class="lab-header-bar">
+                        <div class="lab-title-block">
+                            <span class="lab-title-main">جدول جرعات طلمبات حقن الشبه</span>
+                            <span class="lab-title-sub">مدير المعمل </span>
+                        </div>
+                        <button type="button" class="btn btn-save lab-header-save" onclick="saveLabData()" title="يُحفظ تلقائياً أثناء التعديل؛ هذا الزر للتأكيد اليدوي">
+                            <i class="fas fa-save"></i> حفظ بيانات المعمل
+                        </button>
+                    </div>
+
+                    <div class="lab-table-wrap">
+                        <table>
+                            <colgroup>
+                                <col style="width:14%">
+                                <col style="width:17%">
+                                <col style="width:17%">
+                                <col style="width:17%">
+                                <col style="width:17%">
+                                <col style="width:18%">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="col-pump">رقم</th>
+                                    <th rowspan="2" class="col-4">4 طلمبات</th>
+                                    <th colspan="2" class="col-3-group-head">3 طلمبات</th>
+                                    <th rowspan="2" class="col-2">طلمبتان</th>
+                                    <th rowspan="2" class="col-1">طلمبة</th>
+                                </tr>
+                                <tr>
+                                    <th class="col-3a">تصرف: <input id="labDischargeLabelA" class="lab-discharge-label-input" type="text" placeholder="—" maxlength="28" dir="auto" /></th>
+                                    <th class="col-3b">تصرف: <input id="labDischargeLabelB" class="lab-discharge-label-input" type="text" placeholder="—" maxlength="28" dir="auto" /></th>
+                                </tr>
+                            </thead>
+                            <tbody id="labTableBody"></tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td class="total-label">إجمالي الكلور</td>
+                                    <td><input class="chlorine-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" /></td>
+                                    <td><input class="chlorine-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" /></td>
+                                    <td><input class="chlorine-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" /></td>
+                                    <td><input class="chlorine-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" /></td>
+                                    <td><input class="chlorine-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" /></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم حول البرنامج -->
+        <div id="aboutProgram" class="section">
+            <div class="header-controls">
+                <button class="back-btn" onclick="showSection('mainMenu')">← رجوع</button>
+                <h2 class="section-title">حول البرنامج</h2>
+            </div>
+
+            <div class="about-program-container">
+                <!-- الحديث الشريف -->
+                <div class="about-card hadith-card">
+                    <div class="about-card-header">
+                        <i class="fas fa-book-quran"></i>
+                        <h3>حديث شريف</h3>
+                    </div>
+                    <div class="about-card-body">
+                        <div class="hadith-content">
+                            <p class="hadith-text">
+                                قال رسول الله صلى الله عليه وسلم:
+                                <span class="hadith-highlight">
+                                    "إذا مات ابن آدم انقطع عمله إلا من ثلاث:
+                                    صدقة جارية، أو علم ينتفع به، أو ولد صالح يدعو له"
+                                </span>
+                            </p>
+                            <p class="hadith-reference">رواه مسلم</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- معلومات المطور -->
+                <div class="about-card developer-card">
+                    <div class="about-card-header">
+                        <i class="fas fa-code"></i>
+                        <h3>معلومات المطور</h3>
+                    </div>
+                    <div class="about-card-body">
+                        <div class="developer-info">
+                            <p class="developer-text">
+                                تم الانتهاء من إنشاء وتطوير هذا البرنامج بواسطة:
+                            </p>
+                            <p class="developer-name">
+                                <i class="fas fa-user"></i> عبد الرحمن محمد السيد
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- معلومات التطبيق والاتصال -->
+                <div class="about-card app-info-card">
+                    <div class="about-card-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>معلومات التطبيق</h3>
+                    </div>
+                    <div class="about-card-body">
+                        <div class="app-info-content">
+                            <p class="app-info-text">
+                                هذا التطبيق تم إنشاؤه خصيصاً ليتلائم مع بيئة العمل داخل محطة مياه ميت خميس وهو آمن
+                                ومجاني بالكامل ولا يحتاج للاتصال بالإنترنت.
+                            </p>
+                            <div class="contact-info">
+                                <p class="contact-title">
+                                    <i class="fas fa-tools"></i> لإضافة تعديلات أو المزيد من الخصائص أو تصحيح أخطاء:
+                                </p>
+                                <div class="contact-details">
+                                    <div class="contact-item">
+                                        <i class="fas fa-phone"></i>
+                                        <a href="tel:01094239375" class="contact-link">01094239375</a>
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fas fa-envelope"></i>
+                                        <a href="mailto:afrotomedo34567@gmail.com"
+                                            class="contact-link">afrotomedo34567@gmail.com</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الدعاء -->
+                <div class="about-card prayer-card">
+                    <div class="about-card-header">
+                        <i class="fas fa-hands-praying"></i>
+                        <h3>دعاء</h3>
+                    </div>
+                    <div class="about-card-body">
+                        <div class="prayer-content">
+                            <p class="prayer-text">
+                                أدعو الله عز وجل أن يجعل هذا العمل الصالح خالصاً مخلصاً لوجهه الكريم،
+                                وأن يكون ذا نفع.
+                            </p>
+                            <p class="prayer-closing">
+                                والسلام عليكم ورحمة الله وبركاته
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- رسالة النجاح -->
+    <div id="successToast" class="success-toast">✓ تم الحفظ بنجاح</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Firebase SDK (v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+    <!-- Auth Script -->
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-messaging.js"></script>
+    <script>
+        window.APP_ROLE = 'tech';
+    </script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // تدوير الشاشة مع دعم ملء الشاشة
+        async function requestRotateScreen(silent = false) {
+            try {
+
+                // طلب ملء الشاشة أولاً (يساعد بعض المتصفحات للسماح بالقفل)
+                const el = document.documentElement;
+                if (el.requestFullscreen) {
+                    await el.requestFullscreen();
+                } else if (el.webkitRequestFullscreen) { // Safari
+                    await el.webkitRequestFullscreen();
+                } else if (el.msRequestFullscreen) { // IE11
+                    await el.msRequestFullscreen();
+                }
+
+                // ثم محاولة قفل الاتجاه للوضع الأفقي عبر Screen Orientation API
+                if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                    try {
+                        await screen.orientation.lock('landscape');
+                        hideRotateOverlay();
+                        return true;
+                    } catch (e) {
+                        console.warn('فشل قفل الاتجاه عبر Screen API:', e);
+                    }
+                }
+
+                // في حال عدم الدعم أو الفشل
+                if (!silent) {
+                    showRotateMessage();
+                }
+                return false;
+            } catch (err) {
+                console.error('خطأ في تدوير الشاشة:', err);
+                if (!silent) {
+                    showRotateMessage();
+                }
+                return false;
+            }
+        }
+
+        // عرض رسالة تدوير متحركة
+        function showRotateMessage() {
+            let overlay = document.getElementById('rotateOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'rotateOverlay';
+                overlay.innerHTML = `
+                    <div class="rotate-message">
+                        <div class="rotate-icon">📱</div>
+                        <h3>يرجى تدوير جهازك</h3>
+                        <p>للحصول على أفضل عرض، يرجى تدوير هاتفك للوضع الأفقي</p>
+                        <button onclick="hideRotateOverlay()" class="rotate-dismiss">حسناً، فهمت</button>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+
+                // إضافة CSS للرسالة
+                const style = document.createElement('style');
+                style.textContent = `
+                    #rotateOverlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0,0,0,0.85);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 9999;
+                        backdrop-filter: blur(5px);
+                    }
+                    .rotate-message {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        text-align: center;
+                        max-width: 80%;
+                    }
+                    .rotate-icon {
+                        font-size: 48px;
+                        animation: rotate 1.5s infinite;
+                        margin-bottom: 10px;
+                    }
+                    .rotate-dismiss {
+                        background: #667eea;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        margin-top: 15px;
+                        cursor: pointer;
+                    }
+                    @keyframes rotate {
+                        0% { transform: rotate(0deg); }
+                        25% { transform: rotate(-90deg); }
+                        100% { transform: rotate(-90deg); }
+                    }
+                    .rotate-btn {
+                        background: #667eea;
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        margin-right: 10px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .rotate-btn i {
+                        font-size: 16px;
+                    }
+                    .rotate-btn:hover {
+                        background: #5a6eea;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            overlay.style.display = 'flex';
+        }
+
+        // إخفاء تراكب التدوير
+        function hideRotateOverlay() {
+            const overlay = document.getElementById('rotateOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function openAllData() {
+            loadAllData();
+            showSection('allData');
+            buildAllDataTable();
+
+            // محاولة تدوير الشاشة تلقائياً
+            requestRotateScreen(true);
+        }
+
+        // Dark Mode Toggle Function
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const icon = themeToggleBtn.querySelector('i');
+
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeToggleBtn = document.getElementById('themeToggle');
+
+            if (themeToggleBtn) {
+                const icon = themeToggleBtn.querySelector('i');
+
+                if (savedTheme === 'dark') {
+                    body.classList.add('dark-mode');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        });
+
+
+    </script>
+</body>
+
+</html>

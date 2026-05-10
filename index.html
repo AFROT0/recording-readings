@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - تطبيق تسجيل القراءات</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="تسجيل القراءات">
+    <link rel="apple-touch-icon" href="splash/splash.png">
+    
+    <!-- Splash Screen for Apple Devices -->
+    <link rel="apple-touch-startup-image" href="splash/splash.png">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pwa.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            margin: 0;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 80%);
+            pointer-events: none;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .company-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            background: #fff url('splash/logo.png') no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            border: 4px solid #fff;
+        }
+
+        .company-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .app-title {
+            font-size: 0.9rem;
+            color: #546e7a;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .login-header {
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            color: #1a237e;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+            text-align: right;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #455a64;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 15px;
+            color: #90a4ae;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.9rem 2.8rem 0.9rem 1rem;
+            border: 2px solid #eceff1;
+            border-radius: 14px;
+            background-color: #fcfdfe;
+            color: #263238;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-align: right;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3949ab;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(57, 73, 171, 0.1);
+        }
+
+        .input-group input:focus + i {
+            color: #3949ab;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: #3949ab;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-login:hover {
+            background: #303f9f;
+            box-shadow: 0 8px 15px rgba(57, 73, 171, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #d32f2f;
+            margin-top: 1.25rem;
+            font-size: 0.85rem;
+            display: none;
+            padding: 0.75rem;
+            background-color: #ffebee;
+            border-radius: 10px;
+            border: 1px solid #ffcdd2;
+            font-weight: 600;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .loading {
+            display: none;
+            color: #3949ab;
+            margin-top: 1.25rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* زر تبديل الوضع الليلي */
+        .theme-switch-wrapper {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+        }
+
+        .theme-switch-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #3949ab;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-switch-btn:hover {
+            background: rgba(57, 73, 171, 0.1);
+            transform: rotate(15deg);
+        }
+
+        body.dark-mode .theme-switch-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffd700;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            .login-container {
+                padding: 2rem 1.5rem;
+                border-radius: 20px;
+            }
+            .company-logo {
+                width: 85px;
+                height: 85px;
+            }
+            .company-name {
+                font-size: 0.9rem;
+            }
+            .login-header h2 {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Dark mode support */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        body.dark-mode .login-container {
+            background-color: #1e293b;
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        body.dark-mode .company-name { color: #f8fafc; }
+        body.dark-mode .app-title { color: #94a3b8; }
+        body.dark-mode .login-header h2 { color: #f8fafc; }
+        body.dark-mode .input-group label { color: #cbd5e1; }
+        
+        body.dark-mode .input-group input {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+
+        body.dark-mode .input-group input:focus {
+            border-color: #6366f1;
+            background-color: #0f172a;
+        }
+
+        body.dark-mode .btn-login {
+            background: #4f46e5;
+        }
+
+        body.dark-mode .btn-login:hover {
+            background: #6366f1;
+        }
+
+        body.dark-mode .error-message {
+            background-color: rgba(211, 47, 47, 0.1);
+            border-color: rgba(211, 47, 47, 0.3);
+            color: #ef4444;
+        }
+
+        /* Modern Splash Screen Styles */
+        .modern-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1e3c72 0%, #1a237e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+        }
+        .splash-content {
+            text-align: center;
+            animation: splashFadeIn 0.8s ease-out;
+        }
+        .splash-logo-container {
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border: 5px solid rgba(255,255,255,0.2);
+            animation: pulse-logo 2s infinite ease-in-out;
+        }
+        .splash-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+        .splash-loader {
+            width: 180px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 20px auto 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loader-bar {
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            border-radius: 10px;
+            animation: loading-bar 1.5s infinite linear;
+            position: absolute;
+        }
+        .splash-text {
+            color: rgba(255,255,255,0.9);
+            font-size: 1rem;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        @keyframes splashFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse-logo {
+            0%, 100% { transform: scale(1); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 20px 45px rgba(0,0,0,0.4); }
+        }
+        @keyframes loading-bar {
+            from { left: -100%; }
+            to { left: 100%; }
+        }
+    </style>
+</head>
+
+<body onload="hideSplash()">
+    <!-- Fake Splash Screen -->
+    <div id="fake-splash" class="modern-splash">
+        <div class="splash-content">
+            <div class="splash-logo-container">
+                <img src="splash/logo.png" alt="Logo" class="splash-logo">
+            </div>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+            </div>
+            <div class="splash-text">جاري تحميل البيانات...</div>
+        </div>
+    </div>
+
+    <!-- Notification Prompt Banner -->
+    <div id="notification-prompt-banner" class="notification-prompt-banner">
+        <div class="prompt-content">
+            <i class="fas fa-bell"></i>
+            <span>فعّل الإشعارات لتلقي تنبيهات فورية عند تحديث البيانات</span>
+        </div>
+        <div class="prompt-actions">
+            <button class="btn-prompt-allow" onclick="requestNotificationPermission()">تفعيل</button>
+            <button class="btn-prompt-dismiss" onclick="dismissNotificationPrompt()">لاحقاً</button>
+        </div>
+    </div>
+
+    <!-- PWA UI Components -->
+    <div id="pwa-install-banner" class="pwa-install-banner">
+        <div class="pwa-content">
+            <div class="pwa-icon"><i class="fas fa-mobile-alt"></i></div>
+            <div class="pwa-text">
+                <h3>تثبيت التطبيق</h3>
+                <p>قم بتثبيت التطبيق للوصول السريع والعمل بدون إنترنت</p>
+            </div>
+        </div>
+        <div class="pwa-actions">
+            <button class="btn-pwa btn-pwa-install" onclick="installPWA()">تثبيت</button>
+            <button class="btn-pwa btn-pwa-close" onclick="closeInstallBanner()">إغلاق</button>
+        </div>
+    </div>
+
+    <div id="pwa-offline-toast" class="pwa-offline-toast">
+        <i class="fas fa-wifi-slash"></i>
+        <span>أنت تعمل الآن بدون اتصال بالإنترنت</span>
+    </div>
+
+    <div id="pwa-update-toast" class="pwa-update-toast">
+        <span>يتوفر تحديث جديد للتطبيق</span>
+        <button class="btn-refresh" onclick="window.location.reload()">تحديث</button>
+    </div>
+
+    <script>
+        // ============================================================
+        // توجيه فوري بناءً على الدور المحفوظ (يعمل قبل Firebase)
+        // يحل مشكلة: الضغط على الإشعار يفتح index.html بدلاً من صفحة الفني
+        // ============================================================
+        (function instantRoleRedirect() {
+            const role = localStorage.getItem('userRole');
+            if (!role) return; // لم يسبق تسجيل دخول → أبقِ على صفحة الدخول
+
+            const routes = {
+                'tech':        'tech.html',
+                'lab_manager': 'lab.html',
+                'ops_manager': 'ops.html'
+            };
+
+            const targetPage = routes[role];
+            if (targetPage && !window.location.href.includes(targetPage)) {
+                // تحقق أن الجلسة ليست منتهية قبل التوجيه الفوري
+                // نوجّه فوراً — سيتحقق auth.js من صحة الجلسة على الصفحة المستهدفة
+                window.location.replace(targetPage);
+            }
+        })();
+
+        function hideSplash() {
+            const splash = document.getElementById('fake-splash');
+            if (splash) {
+                setTimeout(() => {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                    setTimeout(() => splash.remove(), 500);
+                }, 1500);
+            }
+        }
+    </script>
+
+
+    <div class="login-container">
+        <!-- Theme Toggle inside container -->
+        <div class="theme-switch-wrapper" style="position: absolute; top: 15px; left: 15px; z-index: 10;">
+            <button class="theme-switch-btn" onclick="toggleTheme()" title="تبديل الوضع" style="width: 38px; height: 38px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: #f1f5f9; color: #475569;">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
+        <div class="login-header">
+            <div class="company-logo"></div>
+            <div class="company-name">الشركة القابضة لمياه الشرب والصرف الصحي</div>
+            <div class="app-title"> محطة مياه ميت خميس ترحب بكم</div>
+            <h2><i class="fas fa-user-shield"></i> تسجيل الدخول</h2>
+        </div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">البريد الإلكتروني</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" required placeholder="أدخل البريد الإلكتروني">
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="password">كلمة المرور</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-login" id="loginBtn">دخول</button>
+        </form>
+        <div class="error-message" id="errorMessage">البريد الإلكتروني أو كلمة المرور غير صحيحة</div>
+        <div class="loading" id="loadingMessage"><i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...</div>
+        
+        <!-- PWA Status Checker (Debug only) -->
+        <div id="pwa-debug-status" style="margin-top: 20px; font-size: 0.7rem; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 10px; display: none;">
+            <div id="sw-status">Service Worker: Checking...</div>
+            <div id="manifest-status">Manifest: Checking...</div>
+            <div id="prompt-status">Install Prompt: Waiting...</div>
+            <button onclick="checkPwaStatus()" style="margin-top: 5px; padding: 2px 8px; font-size: 0.6rem; cursor: pointer;">تحديث الحالة</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
+
+    <!-- PWA Service Worker Registration & Logic -->
+
+
+    <script>
+        let deferredPrompt;
+        
+        // Use a function to get elements to ensure they are available
+        const getPwaElements = () => ({
+            installBanner: document.getElementById('pwa-install-banner'),
+            offlineToast: document.getElementById('pwa-offline-toast'),
+            updateToast: document.getElementById('pwa-update-toast')
+        });
+
+        console.log('[PWA] Debug: Script initialized');
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                console.log('[PWA] Debug: Registering Service Worker...');
+                navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                    .then(function(registration) {
+                        console.log('[PWA] Success: Service Worker registered with scope:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            console.log('[PWA] Debug: Update found, installing...');
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                console.log('[PWA] Debug: SW state changed to:', newWorker.state);
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('[PWA] Notice: New version available!');
+                                    const { updateToast } = getPwaElements();
+                                    if (updateToast) updateToast.classList.add('show');
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error('[PWA] Error: Service Worker registration failed:', error);
+                    });
+            });
+
+            // Ensure the page reloads when the service worker changes
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    window.location.reload();
+                    refreshing = true;
+                }
+            });
+        }
+
+        // Install Prompt Logic
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('[PWA] Success: beforeinstallprompt event fired');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show banner after 3 seconds
+            setTimeout(() => {
+                if (!localStorage.getItem('pwa-banner-closed')) {
+                    const { installBanner } = getPwaElements();
+                    if (installBanner) {
+                        console.log('[PWA] Debug: Showing install banner');
+                        installBanner.classList.add('show');
+                    }
+                } else {
+                    console.log('[PWA] Debug: Install banner suppressed (previously closed)');
+                }
+            }, 3000);
+        });
+
+        async function installPWA() {
+            if (!deferredPrompt) {
+                console.warn('[PWA] Error: deferredPrompt is not available');
+                return;
+            }
+            const { installBanner } = getPwaElements();
+            if (installBanner) installBanner.classList.remove('show');
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`[PWA] Install prompt outcome: ${outcome}`);
+            deferredPrompt = null;
+        }
+
+        function closeInstallBanner() {
+            const { installBanner } = getPwaElements();
+            if (installBanner) installBanner.classList.remove('show');
+            localStorage.setItem('pwa-banner-closed', 'true');
+            console.log('[PWA] Debug: Install banner closed and stored in localStorage');
+        }
+
+        // Offline/Online Detection
+        window.addEventListener('online', () => {
+            console.log('[PWA] Status: Online');
+            const { offlineToast } = getPwaElements();
+            if (offlineToast) offlineToast.classList.remove('show');
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('[PWA] Status: Offline');
+            const { offlineToast } = getPwaElements();
+            if (offlineToast) offlineToast.classList.add('show');
+        });
+
+        // Initialize state
+        if (!navigator.onLine) {
+            const { offlineToast } = getPwaElements();
+            if (offlineToast) offlineToast.classList.add('show');
+        }
+
+        // PWA Debug Function
+        window.checkPwaStatus = async function() {
+            const debugPanel = document.getElementById('pwa-debug-status');
+            debugPanel.style.display = 'block';
+            
+            const swStatus = document.getElementById('sw-status');
+            const manifestStatus = document.getElementById('manifest-status');
+            const promptStatus = document.getElementById('prompt-status');
+
+            // Check SW
+            if ('serviceWorker' in navigator) {
+                const reg = await navigator.serviceWorker.getRegistration();
+                swStatus.innerHTML = reg ? `✅ SW Registered (${reg.active ? 'Active' : 'Pending'})` : '❌ SW Not Found';
+                swStatus.style.color = reg ? '#10b981' : '#ef4444';
+            }
+
+            // Check Manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            manifestStatus.innerHTML = manifestLink ? '✅ Manifest Link Found' : '❌ Manifest Link Missing';
+            manifestStatus.style.color = manifestLink ? '#10b981' : '#ef4444';
+
+            // Check Prompt
+            promptStatus.innerHTML = deferredPrompt ? '✅ Install Prompt Ready' : '⏳ Waiting for browser (Check HTTPS/Localhost)';
+            promptStatus.style.color = deferredPrompt ? '#10b981' : '#f59e0b';
+            
+            console.log('[PWA] Status Check:', {
+                sw: !!(await navigator.serviceWorker.getRegistration()),
+                manifest: !!document.querySelector('link[rel="manifest"]'),
+                prompt: !!deferredPrompt,
+                https: window.location.protocol === 'https:',
+                localhost: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            });
+        };
+
+        // Show debug panel if URL has ?debug
+        if (window.location.search.includes('debug')) {
+            setTimeout(checkPwaStatus, 1000);
+        }
+    </script>
+
+    <!-- Auth Script -->
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-messaging.js"></script>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Theme init
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('theme');
+            const icon = document.getElementById('themeIcon');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (icon) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

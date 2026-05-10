@@ -1,0 +1,66 @@
+{
+  "id": "recording-readings-app",
+  "name": "برنامج التشغيل - محطة ميت خميس",
+  "short_name": "التشغيل",
+  "description": "تطبيق لتسجيل ومتابعة قراءات محطة مياه ميت خميس",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0090d6",
+  "theme_color": "#1e3c72",
+  "orientation": "portrait",
+  "categories": [
+    "business",
+    "utilities",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "splash/splash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash/splash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "فتح التطبيق",
+      "short_name": "التطبيق",
+      "description": "الدخول إلى الصفحة الرئيسية",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "icons/icon.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "splash/splash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "الشاشة الرئيسية"
+    }
+  ]
+}
